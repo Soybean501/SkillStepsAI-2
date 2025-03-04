@@ -24,6 +24,18 @@ interface AIRequestOptions {
   presencePenalty?: number
 }
 
+interface LearningStep {
+  id: number
+  title: string
+  description: string
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
+  estimatedTime: string
+}
+
+interface LearningPathResponse {
+  steps: LearningStep[]
+}
+
 export class AIService {
   private static instance: AIService
   private apiKey: string
@@ -32,6 +44,10 @@ export class AIService {
   private constructor() {
     this.apiKey = AI_CONFIG.OPENROUTER_API_KEY
     this.baseUrl = AI_CONFIG.OPENROUTER_BASE_URL
+    
+    if (!this.apiKey) {
+      throw new Error('OpenRouter API key is not configured. Please set the OPENROUTER_API_KEY environment variable.')
+    }
   }
 
   public static getInstance(): AIService {
@@ -42,6 +58,10 @@ export class AIService {
   }
 
   private async makeRequest(prompt: string, options: AIRequestOptions = {}): Promise<AIResponse> {
+    if (!this.apiKey) {
+      throw new Error('OpenRouter API key is not configured')
+    }
+
     const response = await fetch(`${this.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -71,26 +91,46 @@ export class AIService {
     })
 
     if (!response.ok) {
-      throw new Error(`AI API request failed: ${response.statusText}`)
+      const errorText = await response.text()
+      throw new Error(`AI API request failed: ${response.statusText}. Details: ${errorText}`)
     }
 
     return response.json()
   }
 
-  public async generateLearningPath(topic: string): Promise<string> {
-    const prompt = `Create a detailed learning path for ${topic}. Include:
-    1. A clear progression of topics
-    2. Estimated time for each step
-    3. Difficulty levels
-    4. Key concepts to master
-    5. Practice exercises
-    6. Resources and references
+  public async generateLearningPath(topic: string): Promise<LearningPathResponse> {
+    const prompt = `Create a detailed learning path for ${topic}. Return the response as a JSON object with the following structure:
+    {
+      "steps": [
+        {
+          "id": number,
+          "title": string,
+          "description": string,
+          "difficulty": "Beginner" | "Intermediate" | "Advanced",
+          "estimatedTime": string
+        }
+      ]
+    }
     
-    Format the response in a clear, structured way.`
+    Include 5-7 steps with clear progression, appropriate difficulty levels, and realistic time estimates.`
 
     try {
       const response = await this.makeRequest(prompt)
-      return response.choices[0].message.content
+      const content = response.choices[0].message.content
+      // Try to parse the JSON response
+      try {
+        return JSON.parse(content)
+      } catch (_error) {
+        // If parsing fails, create a structured response from the text
+        const steps = content.split('\n').filter(line => line.trim()).map((line, index) => ({
+          id: index + 1,
+          title: line.split(':')[0] || `Step ${index + 1}`,
+          description: line.split(':')[1] || 'No description available',
+          difficulty: 'Beginner' as const,
+          estimatedTime: '30 minutes'
+        }))
+        return { steps }
+      }
     } catch (error) {
       console.error('Error generating learning path:', error)
       throw error

@@ -17,8 +17,8 @@ export async function POST(request: Request) {
             { status: 400 }
           )
         }
-        response = await aiService.generateLearningPath(topic)
-        break
+        const learningPath = await aiService.generateLearningPath(topic)
+        return NextResponse.json(learningPath)
 
       case 'generateStepContent':
         if (!topic || !stepId) {
