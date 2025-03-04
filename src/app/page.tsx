@@ -1,153 +1,30 @@
-'use client'
-
-import React, { useState, useEffect } from 'react'
-import Image from 'next/image'
-import Navigation from '@/components/Navigation'
-import LearningPathSearch from '@/components/learning/LearningPathSearch'
-import LearningSteps from '@/components/learning/LearningSteps'
-
-interface LearningPath {
-  topic: string
-  steps: Array<{
-    id: number
-    title: string
-    description: string
-    difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
-    estimatedTime: string
-  }>
-}
-
 export default function Home() {
-  const [learningPath, setLearningPath] = useState<LearningPath | null>(null)
-
-  useEffect(() => {
-    const storedPath = localStorage.getItem('currentLearningPath')
-    if (storedPath) {
-      try {
-        const parsedPath = JSON.parse(storedPath)
-        console.log('Loaded stored path:', parsedPath) // Debug log
-        
-        // Ensure the path has the correct structure
-        if (parsedPath.topic && Array.isArray(parsedPath.steps) && parsedPath.steps.length > 0) {
-          setLearningPath(parsedPath)
-        } else {
-          console.log('Invalid stored path structure, removing from storage') // Debug log
-          localStorage.removeItem('currentLearningPath')
-        }
-      } catch (err) {
-        console.error('Error parsing learning path:', err)
-        localStorage.removeItem('currentLearningPath')
-      }
-    }
-  }, [])
-
-  const handlePathGenerated = (path: LearningPath) => {
-    console.log('Received new path:', path) // Debug log
-    setLearningPath(path)
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-purple-900">
-      <div className="absolute inset-0 bg-[url('/stars.svg')] opacity-20"></div>
-      <Navigation />
-      
-      <main className="max-w-4xl mx-auto px-4 py-16 relative">
-        <div className="text-center mb-12 animate-fade-in">
-          <div className="relative inline-block">
-            <div className="w-32 h-32 relative">
-              <Image
-                src="/wizard.svg"
-                alt="Wizard"
-                fill
-                className="animate-float"
-                priority
-              />
-            </div>
-            <div className="absolute -top-4 -right-4">
-              <span className="text-4xl">✨</span>
-            </div>
+    <main className="min-h-screen p-8 bg-gradient-to-b from-gray-900 to-gray-800">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-4xl font-bold text-white mb-6">
+          Welcome to SkillSteps AI
+        </h1>
+        <p className="text-xl text-gray-300 mb-8">
+          Your personalized learning journey begins here. We&apos;re currently working on bringing you the full experience.
+        </p>
+        <div className="space-y-6">
+          <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
+            <h2 className="text-2xl font-semibold text-white mb-4">Coming Soon</h2>
+            <ul className="space-y-3 text-gray-300">
+              <li>• Personalized Learning Paths</li>
+              <li>• AI-Powered Content Generation</li>
+              <li>• Interactive Practice Exercises</li>
+              <li>• Progress Tracking</li>
+            </ul>
           </div>
-          <h1 className="text-5xl font-bold text-white mt-6 mb-4">
-            Welcome to SkillSteps AI
-          </h1>
-          <p className="text-purple-100 text-xl">
-            Your magical journey to learning starts here!
-          </p>
+          <div className="text-center">
+            <p className="text-gray-400">
+              Stay tuned for updates as we develop more features!
+            </p>
+          </div>
         </div>
-
-        <div className="animate-fade-in-delayed">
-          <LearningPathSearch onPathGenerated={handlePathGenerated} />
-        </div>
-
-        {learningPath && learningPath.steps && learningPath.steps.length > 0 && (
-          <div className="mt-12 animate-fade-in-delayed">
-            <LearningSteps steps={learningPath.steps} topic={learningPath.topic} />
-          </div>
-        )}
-
-        {!learningPath && (
-          <div className="mt-16 space-y-12 animate-fade-in-delayed">
-            <section className="text-center">
-              <h2 className="text-3xl font-bold text-white mb-6">Popular Learning Paths</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {[
-                  { title: 'Web Development', description: 'Master HTML, CSS, and JavaScript' },
-                  { title: 'Data Science', description: 'Learn Python, statistics, and machine learning' },
-                  { title: 'Digital Marketing', description: 'SEO, social media, and content strategy' },
-                  { title: 'Photography', description: 'Camera basics, composition, and editing' },
-                ].map((path, index) => (
-                  <div key={index} className="bg-purple-900/70 backdrop-blur-sm rounded-xl p-6 border-2 border-purple-400 hover:border-purple-300 transition-colors">
-                    <h3 className="text-xl font-semibold text-white mb-2">{path.title}</h3>
-                    <p className="text-purple-200">{path.description}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section className="text-center">
-              <h2 className="text-3xl font-bold text-white mb-6">Why Choose SkillSteps AI?</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
-                  { icon: '🎯', title: 'Personalized Learning', description: 'AI-powered paths tailored to your goals' },
-                  { icon: '⚡', title: 'Interactive Content', description: 'Engaging exercises and real-world projects' },
-                  { icon: '📈', title: 'Progress Tracking', description: 'Monitor your learning journey' },
-                  { icon: '🤖', title: 'AI Guidance', description: 'Get instant feedback and support' },
-                  { icon: '🎓', title: 'Expert Knowledge', description: 'Learn from industry best practices' },
-                  { icon: '🌟', title: 'Flexible Learning', description: 'Learn at your own pace' },
-                ].map((feature, index) => (
-                  <div key={index} className="bg-purple-900/70 backdrop-blur-sm rounded-xl p-6 border-2 border-purple-400">
-                    <span className="text-4xl mb-4 block">{feature.icon}</span>
-                    <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
-                    <p className="text-purple-200">{feature.description}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </div>
-        )}
-      </main>
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes float {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
-          100% { transform: translateY(0px); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.6s ease-out forwards;
-        }
-        .animate-fade-in-delayed {
-          animation: fade-in 0.6s ease-out 0.2s forwards;
-          opacity: 0;
-        }
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-      `}</style>
-    </div>
+      </div>
+    </main>
   )
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import Navigation from '@/components/Navigation'
 
 interface StepData {
@@ -145,7 +146,13 @@ export default function LearnStep() {
       <main className="max-w-4xl mx-auto px-4 py-16 relative">
         <div className="text-center mb-12 animate-fade-in">
           <div className="relative inline-block">
-            <img src="/wizard.svg" alt="Wizard" className="w-24 h-24 animate-float" />
+            <Image 
+              src="/wizard.svg" 
+              alt="Wizard" 
+              width={96} 
+              height={96} 
+              className="animate-float" 
+            />
             <div className="absolute -top-4 -right-4">
               <span className="text-4xl">✨</span>
             </div>

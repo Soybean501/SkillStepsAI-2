@@ -120,7 +120,8 @@ export class AIService {
       // Try to parse the JSON response
       try {
         return JSON.parse(content)
-      } catch (_error) {
+      } catch (error) {
+        console.error('Error parsing AI response:', error);
         // If parsing fails, create a structured response from the text
         const steps = content.split('\n').filter(line => line.trim()).map((line, index) => ({
           id: index + 1,

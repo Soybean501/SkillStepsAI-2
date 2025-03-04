@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function SignUp() {
   const router = useRouter();
@@ -52,7 +53,13 @@ export default function SignUp() {
         <div>
           <div className="flex justify-center">
             <div className="relative">
-              <img src="/wizard.svg" alt="Wizard" className="w-24 h-24 animate-float" />
+              <Image 
+                src="/wizard.svg" 
+                alt="Wizard" 
+                width={96}
+                height={96}
+                className="animate-float" 
+              />
               <div className="absolute -top-4 -right-4">
                 <span className="text-4xl">✨</span>
               </div>
