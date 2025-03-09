@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import SavedPaths from '@/components/learning/SavedPaths'
-import SavedPathsStyles from '@/components/learning/SavedPathsStyles'
+import styles from '@/styles/animations.module.css'
 
 export default async function SavedPathsPage() {
   const session = await getServerSession(authOptions)
@@ -17,10 +17,9 @@ export default async function SavedPathsPage() {
     <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-purple-900">
       <div className="absolute inset-0 bg-[url('/stars.svg')] opacity-20"></div>
       <Navigation />
-      <SavedPathsStyles />
       
       <main className="max-w-4xl mx-auto px-4 py-16 relative">
-        <div className="text-center mb-12 animate-fade-in">
+        <div className={`text-center mb-12 ${styles.fadeIn}`}>
           <div className="relative inline-block">
             <div className="w-32 h-32 relative">
               <span className="text-6xl">📚</span>
@@ -37,7 +36,7 @@ export default async function SavedPathsPage() {
           </p>
         </div>
 
-        <div className="animate-fade-in-delayed">
+        <div className={styles.fadeInDelayed}>
           <SavedPaths />
         </div>
       </main>
