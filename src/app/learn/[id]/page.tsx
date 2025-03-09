@@ -28,33 +28,48 @@ interface LearningPath {
 }
 
 export default function LearnStep() {
+  console.log('🔄 LearnStep component rendered')
   const params = useParams()
+  console.log('📍 Current URL params:', params)
+
   const [step, setStep] = useState<StepData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [learningPath, setLearningPath] = useState<LearningPath | null>(null)
 
   useEffect(() => {
-    // Get the learning path from localStorage
+    console.log('🔍 Attempting to load learning path from localStorage')
     const storedPath = localStorage.getItem('currentLearningPath')
     if (storedPath) {
       try {
-        setLearningPath(JSON.parse(storedPath))
+        const parsedPath = JSON.parse(storedPath)
+        console.log('✅ Successfully loaded learning path:', parsedPath)
+        setLearningPath(parsedPath)
       } catch (err) {
-        console.error('Error parsing learning path:', err)
+        console.error('❌ Error parsing learning path:', err)
         setError('Invalid learning path data')
       }
     } else {
+      console.warn('⚠️ No learning path found in localStorage')
       setError('No learning path found. Please start from the home page.')
     }
   }, [])
 
   useEffect(() => {
     const fetchStepData = async () => {
-      if (!learningPath) return
+      if (!learningPath) {
+        console.log('⏳ Waiting for learning path data...')
+        return
+      }
+
+      console.log('🚀 Fetching step data for:', {
+        topic: learningPath.topic,
+        stepId: params.id
+      })
 
       try {
         setLoading(true)
+        console.log('📡 Making API request to /api/ai')
         const response = await fetch('/api/ai', {
           method: 'POST',
           headers: {
@@ -68,35 +83,43 @@ export default function LearnStep() {
         })
 
         if (!response.ok) {
-          throw new Error('Failed to fetch step data')
+          throw new Error(`Failed to fetch step data: ${response.status} ${response.statusText}`)
         }
 
         const data = await response.json()
+        console.log('✅ API response received:', data)
         
-        setStep({
+        const newStep = {
           id: parseInt(params.id as string),
           title: `Step ${params.id}`,
           description: 'Loading content...',
-          difficulty: 'Beginner',
+          difficulty: 'Beginner' as const,
           estimatedTime: '1 hour',
           content: data.content,
           keyPoints: data.keyPoints || [],
           practiceExercises: data.practiceExercises,
           resources: data.resources || [],
-        })
+        }
+        
+        console.log('📝 Setting step data:', newStep)
+        setStep(newStep)
       } catch (err) {
+        console.error('❌ Error fetching step data:', err)
         setError(err instanceof Error ? err.message : 'An error occurred')
       } finally {
+        console.log('🏁 Finished loading step data')
         setLoading(false)
       }
     }
 
     if (learningPath) {
+      console.log('🔄 Learning path changed, fetching new step data')
       fetchStepData()
     }
   }, [params.id, learningPath])
 
   if (loading) {
+    console.log('⌛ Rendering loading state')
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-purple-900">
         <Navigation />
@@ -109,6 +132,7 @@ export default function LearnStep() {
   }
 
   if (error) {
+    console.log('❌ Rendering error state:', error)
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-purple-900">
         <Navigation />
@@ -127,6 +151,7 @@ export default function LearnStep() {
   }
 
   if (!step) {
+    console.log('⚠️ Rendering step not found state')
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-purple-900">
         <Navigation />
@@ -137,6 +162,12 @@ export default function LearnStep() {
       </div>
     )
   }
+
+  console.log('✨ Rendering step content:', {
+    topic: learningPath?.topic,
+    stepId: step.id,
+    title: step.title
+  })
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-purple-900">
@@ -178,8 +209,9 @@ export default function LearnStep() {
         </div>
 
         <div className="space-y-8">
-          <section className="bg-purple-900/70 backdrop-blur-sm rounded-xl p-8 border-2 border-purple-400 shadow-lg animate-fade-in-delayed">
-            <h3 className="text-2xl font-bold text-white mb-4">Content</h3>
+          <section className="relative bg-purple-900/40 backdrop-blur-lg rounded-xl p-8 border-2 border-purple-400/30 shadow-lg animate-fade-in-delayed group hover:border-purple-300 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-transparent to-purple-600/20 rounded-xl -z-10"></div>
+            <h3 className="text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-200 to-purple-400">Content</h3>
             <div className="prose prose-invert max-w-none">
               <div className="text-purple-100 text-lg leading-relaxed whitespace-pre-wrap">
                 {step.content}
@@ -188,12 +220,13 @@ export default function LearnStep() {
           </section>
 
           {step.keyPoints && step.keyPoints.length > 0 && (
-            <section className="bg-purple-900/70 backdrop-blur-sm rounded-xl p-8 border-2 border-purple-400 shadow-lg animate-fade-in-delayed">
-              <h3 className="text-2xl font-bold text-white mb-4">Key Points</h3>
-              <ul className="space-y-3">
+            <section className="relative bg-purple-900/40 backdrop-blur-lg rounded-xl p-8 border-2 border-purple-400/30 shadow-lg animate-fade-in-delayed group hover:border-purple-300 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-transparent to-purple-600/20 rounded-xl -z-10"></div>
+              <h3 className="text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-200 to-purple-400">Key Points</h3>
+              <ul className="space-y-4">
                 {step.keyPoints.map((point, index) => (
-                  <li key={index} className="flex items-start gap-3 text-purple-100">
-                    <span className="text-purple-400 mt-1">•</span>
+                  <li key={index} className="flex items-start gap-4 text-purple-100 text-lg group-hover:text-purple-200 transition-colors">
+                    <span className="text-purple-400 mt-1 text-2xl">•</span>
                     {point}
                   </li>
                 ))}

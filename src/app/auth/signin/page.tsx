@@ -80,7 +80,7 @@ export default function SignIn() {
         </form>
 
         <p className="mt-6 text-center text-purple-200">
-          Don&apos;t have an account?{' '}
+          Don't have an account?{' '}
           <Link href="/auth/signup" className="text-purple-300 hover:text-purple-200">
             Sign up
           </Link>

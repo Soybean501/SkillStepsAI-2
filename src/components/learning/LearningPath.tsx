@@ -34,7 +34,7 @@ export default function LearningPath({ steps, topic }: LearningPathProps) {
             className="block group"
           >
             <div className="relative bg-purple-900/70 backdrop-blur-sm rounded-xl p-8 border-2 border-purple-400 shadow-lg hover:shadow-xl hover:shadow-purple-500/30 transition-all transform hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-purple-500/50 focus:ring-offset-2 focus:ring-offset-purple-900">
-              <div className="absolute -left-6 -top-6 w-12 h-12 bg-purple-700 rounded-full flex items-center justify-center text-white font-bold text-lg border-2 border-purple-400 shadow-lg group-hover:scale-110 transition-transform">
+              <div className="absolutex -left-6 -top-6 w-12 h-12 bg-purple-700 rounded-full flex items-center justify-center text-white font-bold text-lg border-2 border-purple-400 shadow-lg group-hover:scale-110 transition-transform">
                 {step.id}
               </div>
               

@@ -86,26 +86,48 @@ export default function Home() {
 
         {!learningPath && (
           <div className="mt-16 space-y-12 animate-fade-in-delayed">
-            <section className="text-center">
-              <h2 className="text-3xl font-bold text-white mb-6">Popular Learning Paths</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <section className="text-center relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-transparent to-purple-600/20 rounded-3xl -z-10"></div>
+              <h2 className="text-4xl font-bold text-white mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-200 to-purple-400">Popular Learning Paths</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
                 {[
-                  { title: 'Web Development', description: 'Master HTML, CSS, and JavaScript' },
-                  { title: 'Data Science', description: 'Learn Python, statistics, and machine learning' },
-                  { title: 'Digital Marketing', description: 'SEO, social media, and content strategy' },
-                  { title: 'Photography', description: 'Camera basics, composition, and editing' },
+                  { 
+                    title: 'Web Development', 
+                    description: 'Master HTML, CSS, and JavaScript',
+                    icon: '🌐'
+                  },
+                  { 
+                    title: 'Data Science', 
+                    description: 'Learn Python, statistics, and machine learning',
+                    icon: '📊'
+                  },
+                  { 
+                    title: 'Digital Marketing', 
+                    description: 'SEO, social media, and content strategy',
+                    icon: '📱'
+                  },
+                  { 
+                    title: 'Photography', 
+                    description: 'Camera basics, composition, and editing',
+                    icon: '📸'
+                  },
                 ].map((path, index) => (
-                  <div key={index} className="bg-purple-900/70 backdrop-blur-sm rounded-xl p-6 border-2 border-purple-400 hover:border-purple-300 transition-colors">
-                    <h3 className="text-xl font-semibold text-white mb-2">{path.title}</h3>
-                    <p className="text-purple-200">{path.description}</p>
+                  <div 
+                    key={index} 
+                    className="group bg-purple-900/40 backdrop-blur-lg rounded-xl p-8 border-2 border-purple-400/30 hover:border-purple-300 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 hover:-translate-y-1 cursor-pointer"
+                  >
+                    <span className="text-4xl mb-4 block transform group-hover:scale-110 transition-transform duration-300">{path.icon}</span>
+                    <h3 className="text-2xl font-semibold text-white mb-3 group-hover:text-purple-300 transition-colors">{path.title}</h3>
+                    <p className="text-purple-200 text-lg">{path.description}</p>
                   </div>
                 ))}
               </div>
             </section>
 
-            <section className="text-center">
-              <h2 className="text-3xl font-bold text-white mb-6">Why Choose SkillSteps AI?</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <section className="text-center relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-transparent to-purple-600/20 rounded-3xl -z-10"></div>
+              <h2 className="text-4xl font-bold text-white mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-200 to-purple-400">Why Choose SkillSteps AI?</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-6">
                 {[
                   { icon: '🎯', title: 'Personalized Learning', description: 'AI-powered paths tailored to your goals' },
                   { icon: '⚡', title: 'Interactive Content', description: 'Engaging exercises and real-world projects' },
@@ -114,10 +136,13 @@ export default function Home() {
                   { icon: '🎓', title: 'Expert Knowledge', description: 'Learn from industry best practices' },
                   { icon: '🌟', title: 'Flexible Learning', description: 'Learn at your own pace' },
                 ].map((feature, index) => (
-                  <div key={index} className="bg-purple-900/70 backdrop-blur-sm rounded-xl p-6 border-2 border-purple-400">
-                    <span className="text-4xl mb-4 block">{feature.icon}</span>
-                    <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
-                    <p className="text-purple-200">{feature.description}</p>
+                  <div 
+                    key={index} 
+                    className="group bg-purple-900/40 backdrop-blur-lg rounded-xl p-8 border-2 border-purple-400/30 hover:border-purple-300 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 hover:-translate-y-1 cursor-pointer"
+                  >
+                    <span className="text-4xl mb-4 block transform group-hover:scale-110 transition-transform duration-300">{feature.icon}</span>
+                    <h3 className="text-2xl font-semibold text-white mb-3 group-hover:text-purple-300 transition-colors">{feature.title}</h3>
+                    <p className="text-purple-200 text-lg">{feature.description}</p>
                   </div>
                 ))}
               </div>
