@@ -6,7 +6,6 @@ import LearningSteps from '@/components/learning/LearningSteps'
 import Link from 'next/link'
 import { mockSavedPaths } from '@/lib/mockData'
 import { Metadata } from 'next'
-import { JsonValue } from '@prisma/client/runtime/library'
 
 interface Step {
   id: number
@@ -37,10 +36,13 @@ async function getLearningPath(id: string): Promise<LearningPath | null> {
 
   if (!path) return null
 
+  // Safely cast the steps JSON to our Step interface
+  const steps = Array.isArray(path.steps) ? path.steps as unknown as Step[] : []
+
   return {
     id: path.id,
     topic: path.topic,
-    steps: path.steps as Step[],
+    steps,
     user: path.user ? { email: path.user.email } : undefined
   }
 }
