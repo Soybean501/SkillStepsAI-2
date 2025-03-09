@@ -41,7 +41,7 @@ export default function LearnStep() {
       try {
         const parsedPath = JSON.parse(storedPath);
         setLearningPath(parsedPath);
-      } catch (err) {
+      } catch {
         setError('Invalid learning path data');
       }
     } else {
