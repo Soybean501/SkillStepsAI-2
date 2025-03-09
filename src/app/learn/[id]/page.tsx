@@ -1,75 +1,60 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
-import Link from 'next/link'
-import Image from 'next/image'
-import Navigation from '@/components/Navigation'
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
+import Navigation from '@/components/Navigation';
+import styles from '@/styles/animations.module.css';
 
 interface StepData {
-  id: number
-  title: string
-  description: string
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
-  estimatedTime: string
-  content?: string
-  keyPoints?: string[]
-  practiceExercises?: string
+  id: number;
+  title: string;
+  description: string;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  estimatedTime: string;
+  content?: string;
+  keyPoints?: string[];
+  practiceExercises?: string;
   resources?: Array<{
-    title: string
-    description: string
-    url: string
-  }>
+    title: string;
+    description: string;
+    url: string;
+  }>;
 }
 
 interface LearningPath {
-  topic: string
-  content: string
+  topic: string;
+  content: string;
 }
 
 export default function LearnStep() {
-  console.log('🔄 LearnStep component rendered')
-  const params = useParams()
-  console.log('📍 Current URL params:', params)
-
-  const [step, setStep] = useState<StepData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [learningPath, setLearningPath] = useState<LearningPath | null>(null)
+  const params = useParams();
+  const [step, setStep] = useState<StepData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [learningPath, setLearningPath] = useState<LearningPath | null>(null);
 
   useEffect(() => {
-    console.log('🔍 Attempting to load learning path from localStorage')
-    const storedPath = localStorage.getItem('currentLearningPath')
+    const storedPath = localStorage.getItem('currentLearningPath');
     if (storedPath) {
       try {
-        const parsedPath = JSON.parse(storedPath)
-        console.log('✅ Successfully loaded learning path:', parsedPath)
-        setLearningPath(parsedPath)
+        const parsedPath = JSON.parse(storedPath);
+        setLearningPath(parsedPath);
       } catch (err) {
-        console.error('❌ Error parsing learning path:', err)
-        setError('Invalid learning path data')
+        setError('Invalid learning path data');
       }
     } else {
-      console.warn('⚠️ No learning path found in localStorage')
-      setError('No learning path found. Please start from the home page.')
+      setError('No learning path found. Please start from the home page.');
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     const fetchStepData = async () => {
-      if (!learningPath) {
-        console.log('⏳ Waiting for learning path data...')
-        return
-      }
-
-      console.log('🚀 Fetching step data for:', {
-        topic: learningPath.topic,
-        stepId: params.id
-      })
+      if (!learningPath) return;
 
       try {
-        setLoading(true)
-        console.log('📡 Making API request to /api/ai')
+        setLoading(true);
         const response = await fetch('/api/ai', {
           method: 'POST',
           headers: {
@@ -80,15 +65,13 @@ export default function LearnStep() {
             topic: learningPath.topic,
             stepId: parseInt(params.id as string),
           }),
-        })
+        });
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch step data: ${response.status} ${response.statusText}`)
+          throw new Error(`Failed to fetch step data: ${response.status} ${response.statusText}`);
         }
 
-        const data = await response.json()
-        console.log('✅ API response received:', data)
-        
+        const data = await response.json();
         const newStep = {
           id: parseInt(params.id as string),
           title: `Step ${params.id}`,
@@ -99,27 +82,22 @@ export default function LearnStep() {
           keyPoints: data.keyPoints || [],
           practiceExercises: data.practiceExercises,
           resources: data.resources || [],
-        }
-        
-        console.log('📝 Setting step data:', newStep)
-        setStep(newStep)
+        };
+
+        setStep(newStep);
       } catch (err) {
-        console.error('❌ Error fetching step data:', err)
-        setError(err instanceof Error ? err.message : 'An error occurred')
+        setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
-        console.log('🏁 Finished loading step data')
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
     if (learningPath) {
-      console.log('🔄 Learning path changed, fetching new step data')
-      fetchStepData()
+      fetchStepData();
     }
-  }, [params.id, learningPath])
+  }, [params.id, learningPath]);
 
   if (loading) {
-    console.log('⌛ Rendering loading state')
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-purple-900">
         <Navigation />
@@ -128,11 +106,10 @@ export default function LearnStep() {
           <p className="text-purple-100 text-lg">Loading magical content...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
-    console.log('❌ Rendering error state:', error)
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-purple-900">
         <Navigation />
@@ -147,11 +124,10 @@ export default function LearnStep() {
           </Link>
         </div>
       </div>
-    )
+    );
   }
 
   if (!step) {
-    console.log('⚠️ Rendering step not found state')
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-purple-900">
         <Navigation />
@@ -160,29 +136,22 @@ export default function LearnStep() {
           <p className="text-purple-100">This magical step seems to have vanished!</p>
         </div>
       </div>
-    )
+    );
   }
-
-  console.log('✨ Rendering step content:', {
-    topic: learningPath?.topic,
-    stepId: step.id,
-    title: step.title
-  })
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-purple-900">
       <div className="absolute inset-0 bg-[url('/stars.svg')] opacity-20"></div>
       <Navigation />
-      
       <main className="max-w-4xl mx-auto px-4 py-16 relative">
-        <div className="text-center mb-12 animate-fade-in">
+        <div className="text-center mb-12 ${styles.animateFadeIn}">
           <div className="relative inline-block">
             <Image 
               src="/wizard.svg" 
               alt="Wizard" 
               width={96} 
               height={96} 
-              className="animate-float" 
+              className={styles.animateFloat} 
             />
             <div className="absolute -top-4 -right-4">
               <span className="text-4xl">✨</span>
@@ -207,9 +176,8 @@ export default function LearnStep() {
             </span>
           </div>
         </div>
-
         <div className="space-y-8">
-          <section className="relative bg-purple-900/40 backdrop-blur-lg rounded-xl p-8 border-2 border-purple-400/30 shadow-lg animate-fade-in-delayed group hover:border-purple-300 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20">
+          <section className="relative bg-purple-900/40 backdrop-blur-lg rounded-xl p-8 border-2 border-purple-400/30 shadow-lg ${styles.animateFadeInDelayed} group hover:border-purple-300 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20">
             <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-transparent to-purple-600/20 rounded-xl -z-10"></div>
             <h3 className="text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-200 to-purple-400">Content</h3>
             <div className="prose prose-invert max-w-none">
@@ -218,9 +186,8 @@ export default function LearnStep() {
               </div>
             </div>
           </section>
-
           {step.keyPoints && step.keyPoints.length > 0 && (
-            <section className="relative bg-purple-900/40 backdrop-blur-lg rounded-xl p-8 border-2 border-purple-400/30 shadow-lg animate-fade-in-delayed group hover:border-purple-300 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20">
+            <section className="relative bg-purple-900/40 backdrop-blur-lg rounded-xl p-8 border-2 border-purple-400/30 shadow-lg ${styles.animateFadeInDelayed} group hover:border-purple-300 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20">
               <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-transparent to-purple-600/20 rounded-xl -z-10"></div>
               <h3 className="text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-200 to-purple-400">Key Points</h3>
               <ul className="space-y-4">
@@ -233,9 +200,8 @@ export default function LearnStep() {
               </ul>
             </section>
           )}
-
           {step.practiceExercises && (
-            <section className="bg-purple-900/70 backdrop-blur-sm rounded-xl p-8 border-2 border-purple-400 shadow-lg animate-fade-in-delayed">
+            <section className="bg-purple-900/70 backdrop-blur-sm rounded-xl p-8 border-2 border-purple-400 shadow-lg ${styles.animateFadeInDelayed}">
               <h3 className="text-2xl font-bold text-white mb-4">Practice Exercises</h3>
               <div className="prose prose-invert max-w-none">
                 <div className="text-purple-100 text-lg leading-relaxed whitespace-pre-wrap">
@@ -244,9 +210,8 @@ export default function LearnStep() {
               </div>
             </section>
           )}
-
           {step.resources && step.resources.length > 0 && (
-            <section className="bg-purple-900/70 backdrop-blur-sm rounded-xl p-8 border-2 border-purple-400 shadow-lg animate-fade-in-delayed">
+            <section className="bg-purple-900/70 backdrop-blur-sm rounded-xl p-8 border-2 border-purple-400 shadow-lg ${styles.animateFadeInDelayed}">
               <h3 className="text-2xl font-bold text-white mb-4">Additional Resources</h3>
               <div className="space-y-4">
                 {step.resources.map((resource, index) => (
@@ -268,28 +233,6 @@ export default function LearnStep() {
           )}
         </div>
       </main>
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes float {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
-          100% { transform: translateY(0px); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.6s ease-out forwards;
-        }
-        .animate-fade-in-delayed {
-          animation: fade-in 0.6s ease-out 0.2s forwards;
-          opacity: 0;
-        }
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-      `}</style>
     </div>
-  )
-} 
+  );
+}

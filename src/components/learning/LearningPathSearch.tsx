@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { mockLearningPath, type LearningPath } from '@/lib/mockData'
+import { mockLearningPath, type LearningPath, type Step } from '@/lib/mockData'
 
 interface Props {
   onPathGenerated: (path: LearningPath) => void
@@ -59,7 +59,7 @@ export default function LearningPathSearch({ onPathGenerated }: Props) {
 
       const learningPath: LearningPath = {
         topic: data.topic || query,
-        steps: data.steps.map((step: any) => ({
+        steps: data.steps.map((step: Step) => ({
           id: step.id || 0,
           title: step.title || 'Untitled Step',
           description: step.description || 'No description available',
