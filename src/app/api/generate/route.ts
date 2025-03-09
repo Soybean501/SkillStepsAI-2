@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { mockLearningPath } from '@/lib/mockData'
 
+
+console.log("file loaded")
 export async function POST(req: Request) {
   try {
     console.log('Generate API - Testing mode:', process.env.NEXT_PUBLIC_TESTING_MODE)

@@ -1,30 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { mockLearningPath } from '@/lib/mockData'
+import { mockLearningPath, type LearningPath } from '@/lib/mockData'
 
-interface LearningPath {
-  topic: string
-  steps: Array<{
-    id: number
-    title: string
-    description: string
-    difficulty: 'Beginner' | 'Intermediate' | 'Advanced'
-    estimatedTime: string
-  }>
-}
-
-interface LearningPathSearchProps {
+interface Props {
   onPathGenerated: (path: LearningPath) => void
 }
 
-interface ApiStep {
-  id?: number
-  title?: string
-  description?: string
-  difficulty?: 'Beginner' | 'Intermediate' | 'Advanced'
-  estimatedTime?: string
-}
-
-export default function LearningPathSearch({ onPathGenerated }: LearningPathSearchProps) {
+export default function LearningPathSearch({ onPathGenerated }: Props) {
   const [query, setQuery] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -46,15 +27,12 @@ export default function LearningPathSearch({ onPathGenerated }: LearningPathSear
 
     try {
       // Use mock data in testing mode
-      if (process.env.NEXT_PUBLIC_TESTING_MODE === 'true') {
-        console.log('Using mock learning path:', mockLearningPath)
-        const learningPath = {
-          ...mockLearningPath,
-          topic: query
-        }
-        onPathGenerated(learningPath)
+      if (process.env.NEXT_PUBLIC_TESTING_MODE === 'true') {        
+        const mockPath = mockLearningPath(query, 'Beginner')
+        console.log('mockLearningPath:', mockLearningPath)
+        console.log('Using mock learning path:', mockPath)
+        onPathGenerated(mockPath)
         setQuery('')
-        setIsLoading(false)
         return
       }
 
@@ -81,7 +59,7 @@ export default function LearningPathSearch({ onPathGenerated }: LearningPathSear
 
       const learningPath: LearningPath = {
         topic: data.topic || query,
-        steps: data.steps.map((step: ApiStep) => ({
+        steps: data.steps.map((step: any) => ({
           id: step.id || 0,
           title: step.title || 'Untitled Step',
           description: step.description || 'No description available',
@@ -95,8 +73,8 @@ export default function LearningPathSearch({ onPathGenerated }: LearningPathSear
       onPathGenerated(learningPath)
       setQuery('')
     } catch (err) {
+      setError('Error generating learning path')
       console.error('Error generating learning path:', err)
-      setError(err instanceof Error ? err.message : 'Failed to generate learning path')
     } finally {
       setIsLoading(false)
     }
@@ -137,4 +115,4 @@ export default function LearningPathSearch({ onPathGenerated }: LearningPathSear
       </form>
     </div>
   )
-} 
+}
