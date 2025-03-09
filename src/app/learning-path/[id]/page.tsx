@@ -6,6 +6,7 @@ import LearningSteps from '@/components/learning/LearningSteps'
 import Link from 'next/link'
 import { mockSavedPaths } from '@/lib/mockData'
 import { Metadata } from 'next'
+import { JsonValue } from '@prisma/client/runtime/library'
 
 interface Step {
   id: number
@@ -15,15 +16,16 @@ interface Step {
   estimatedTime: string
 }
 
-type PageParams = { id: string }
-
-export async function generateMetadata({ params }: { params: PageParams }): Promise<Metadata> {
-  return {
-    title: `Learning Path - ${params.id}`,
+interface LearningPath {
+  id: string
+  topic: string
+  steps: Step[]
+  user?: {
+    email: string | null
   }
 }
 
-async function getLearningPath(id: string) {
+async function getLearningPath(id: string): Promise<LearningPath | null> {
   if (process.env.NEXT_PUBLIC_TESTING_MODE === 'true') {
     return mockSavedPaths.find(p => p.id === id) || null
   }
@@ -33,10 +35,31 @@ async function getLearningPath(id: string) {
     include: { user: true },
   })
 
-  return path
+  if (!path) return null
+
+  return {
+    id: path.id,
+    topic: path.topic,
+    steps: path.steps as Step[],
+    user: path.user ? { email: path.user.email } : undefined
+  }
 }
 
-export default async function LearningPathPage({ params }: { params: PageParams }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string }
+}): Promise<Metadata> {
+  return {
+    title: `Learning Path - ${params.id}`,
+  }
+}
+
+export default async function LearningPathPage({
+  params,
+}: {
+  params: { id: string }
+}) {
   const session = await getServerSession(authOptions)
 
   if (!session) {
@@ -64,7 +87,7 @@ export default async function LearningPathPage({ params }: { params: PageParams 
   }
 
   // Only check user email if not in testing mode and path has user info
-  if (!process.env.NEXT_PUBLIC_TESTING_MODE && 'user' in path && path.user.email !== session.user?.email) {
+  if (!process.env.NEXT_PUBLIC_TESTING_MODE && path.user?.email !== session.user?.email) {
     redirect('/saved-paths')
   }
 
@@ -80,7 +103,7 @@ export default async function LearningPathPage({ params }: { params: PageParams 
         </Link>
       </div>
       
-      <LearningSteps topic={path.topic} steps={path.steps as unknown as Step[]} />
+      <LearningSteps topic={path.topic} steps={path.steps} />
     </main>
   )
 } 
