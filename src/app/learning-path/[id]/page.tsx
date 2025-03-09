@@ -14,13 +14,11 @@ interface Step {
   estimatedTime: string
 }
 
-interface Props {
-  params: {
-    id: string
-  }
-}
-
-export default async function LearningPathPage({ params }: Props) {
+export default async function LearningPathPage({
+  params,
+}: {
+  params: { id: string }
+}) {
   const session = await getServerSession(authOptions)
 
   if (!session) {

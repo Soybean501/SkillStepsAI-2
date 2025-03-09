@@ -1,7 +1,5 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import prisma from './prisma'
-import { compare } from 'bcrypt'
 
 declare module 'next-auth' {
   interface Session {
@@ -39,29 +37,25 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+        // In production mode, we'll handle this in the API route
+        // This prevents bcrypt from being included in the client bundle
+        const response = await fetch('/api/auth/verify-credentials', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: credentials.email,
+            password: credentials.password,
+          }),
         })
 
-        if (!user) {
+        if (!response.ok) {
           return null
         }
 
-        if (!user.password) {
-          return null
-        }
-
-        const isPasswordValid = await compare(credentials.password, user.password)
-
-        if (!isPasswordValid) {
-          return null
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-        }
+        const user = await response.json()
+        return user
       },
     }),
   ],
@@ -81,6 +75,5 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: '/auth/signin',
-    signUp: '/auth/signup',
   },
 } 

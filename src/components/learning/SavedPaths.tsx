@@ -83,7 +83,7 @@ export default function SavedPaths() {
   if (savedPaths.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-purple-200 text-lg">You haven't saved any learning paths yet.</p>
+        <p className="text-purple-200 text-lg">You haven&apos;t saved any learning paths yet.</p>
       </div>
     )
   }

@@ -1,11 +1,10 @@
-'use client'
-
 import React from 'react'
 import Navigation from '@/components/Navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { redirect } from 'next/navigation'
-import SavedPaths from '@/components/SavedPaths'
+import SavedPaths from '@/components/learning/SavedPaths'
+import SavedPathsStyles from '@/components/learning/SavedPathsStyles'
 
 export default async function SavedPathsPage() {
   const session = await getServerSession(authOptions)
@@ -18,6 +17,7 @@ export default async function SavedPathsPage() {
     <div className="min-h-screen bg-gradient-to-b from-purple-900 via-purple-800 to-purple-900">
       <div className="absolute inset-0 bg-[url('/stars.svg')] opacity-20"></div>
       <Navigation />
+      <SavedPathsStyles />
       
       <main className="max-w-4xl mx-auto px-4 py-16 relative">
         <div className="text-center mb-12 animate-fade-in">
@@ -41,20 +41,6 @@ export default async function SavedPathsPage() {
           <SavedPaths />
         </div>
       </main>
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.6s ease-out forwards;
-        }
-        .animate-fade-in-delayed {
-          animation: fade-in 0.6s ease-out 0.2s forwards;
-          opacity: 0;
-        }
-      `}</style>
     </div>
   )
 } 
