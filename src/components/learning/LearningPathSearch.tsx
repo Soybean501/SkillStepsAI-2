@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { mockLearningPath } from '@/lib/mockData'
 
 interface LearningPath {
   topic: string
@@ -44,13 +45,25 @@ export default function LearningPathSearch({ onPathGenerated }: LearningPathSear
     setError(null)
 
     try {
-      const response = await fetch('/api/ai', {
+      // Use mock data in testing mode
+      if (process.env.NEXT_PUBLIC_TESTING_MODE === 'true') {
+        console.log('Using mock learning path:', mockLearningPath)
+        const learningPath = {
+          ...mockLearningPath,
+          topic: query
+        }
+        onPathGenerated(learningPath)
+        setQuery('')
+        setIsLoading(false)
+        return
+      }
+
+      const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          action: 'generateLearningPath',
           topic: query,
         }),
       })
@@ -67,7 +80,7 @@ export default function LearningPathSearch({ onPathGenerated }: LearningPathSear
       }
 
       const learningPath: LearningPath = {
-        topic: query,
+        topic: data.topic || query,
         steps: data.steps.map((step: ApiStep) => ({
           id: step.id || 0,
           title: step.title || 'Untitled Step',
