@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 interface LearningPath {
   topic: string
@@ -27,6 +27,14 @@ export default function LearningPathSearch({ onPathGenerated }: LearningPathSear
   const [query, setQuery] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Reset state when component mounts
+  useEffect(() => {
+    setQuery('')
+    setError(null)
+    // Clear any stored path to ensure fresh start
+    localStorage.removeItem('currentLearningPath')
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -72,6 +80,7 @@ export default function LearningPathSearch({ onPathGenerated }: LearningPathSear
       console.log('Processed learning path:', learningPath)
       localStorage.setItem('currentLearningPath', JSON.stringify(learningPath))
       onPathGenerated(learningPath)
+      setQuery('')
     } catch (err) {
       console.error('Error generating learning path:', err)
       setError(err instanceof Error ? err.message : 'Failed to generate learning path')

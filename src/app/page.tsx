@@ -20,6 +20,12 @@ interface LearningPath {
 export default function Home() {
   const [learningPath, setLearningPath] = useState<LearningPath | null>(null)
 
+  // Clear learning path and localStorage
+  const resetLearningPath = () => {
+    setLearningPath(null)
+    localStorage.removeItem('currentLearningPath')
+  }
+
   useEffect(() => {
     const storedPath = localStorage.getItem('currentLearningPath')
     if (storedPath) {
@@ -38,7 +44,7 @@ export default function Home() {
         localStorage.removeItem('currentLearningPath')
       }
     }
-  }, [])
+  }, []) // Empty dependency array - only run once on mount
 
   const handlePathGenerated = (path: LearningPath) => {
     console.log('Received new path:', path)
@@ -72,6 +78,14 @@ export default function Home() {
           <p className="text-purple-100 text-xl">
             Your magical journey to learning starts here!
           </p>
+          {learningPath && (
+            <button
+              onClick={resetLearningPath}
+              className="mt-4 px-4 py-2 bg-purple-500 hover:bg-purple-400 text-white rounded-lg transition-colors text-sm"
+            >
+              Start New Learning Path
+            </button>
+          )}
         </div>
 
         <div className="animate-fade-in-delayed">
